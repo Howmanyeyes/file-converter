@@ -1,0 +1,150 @@
+QWidget {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 14px;
+}
+
+QLabel#privacyText {
+    color: #4ec9b0;
+    font-size: 12px;
+}
+
+QFrame#dropArea {
+    background-color: #252526;
+    border: 2px dashed #3e3e42;
+    border-radius: 14px;
+}
+
+QFrame#dropArea[dragActive="true"] {
+    background-color: #2d2d30;
+    border-color: #007acc;
+}
+
+QLabel#dropHint {
+    background-color: transparent;
+    border: none;
+    color: #d4d4d4;
+    font-size: 17px;
+    padding: 4px;
+}
+
+QScrollArea#fileScrollArea,
+QScrollArea#fileScrollArea > QWidget > QWidget,
+QWidget#cardsContainer {
+    background-color: transparent;
+    border: none;
+}
+
+QFrame#fileCard {
+    background-color: #2d2d30;
+    border: 1px solid #3e3e42;
+    border-radius: 10px;
+}
+
+QFrame#fileCard:hover {
+    border-color: #55555b;
+}
+
+QFrame#fileCard[dragging="true"] {
+    border-color: #007acc;
+}
+
+QFrame#fileCard QLabel {
+    background-color: transparent;
+    border: none;
+}
+
+QLabel#filePreview {
+    background-color: transparent;
+    border: none;
+    border-radius: 7px;
+    color: #9d9d9d;
+    font-size: 12px;
+}
+
+QLabel#filePreview:hover {
+    background-color: #333337;
+}
+
+QLabel#fileName {
+    background-color: transparent;
+    border: none;
+    color: #d4d4d4;
+    font-weight: 600;
+    padding: 0;
+}
+
+QFrame#fileControlsOverlay {
+    background-color: transparent;
+    border: none;
+}
+
+QFrame#fileOrderBadge {
+    background-color: #18181a;
+    border: 1px solid #6a6a70;
+    border-radius: 11px;
+}
+
+QLabel#fileOrderText {
+    background-color: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 0;
+}
+
+QToolButton#removeFileButton {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    padding: 3px;
+}
+
+QToolButton#removeFileButton:hover {
+    background-color: #4b2b2d;
+}
+
+QToolButton#removeFileButton:pressed {
+    background-color: #5a272b;
+}
+
+QPushButton#filePathButton {
+    background-color: transparent;
+    border: none;
+    color: #75beff;
+    padding: 2px 0;
+    text-align: left;
+}
+
+QPushButton#filePathButton:hover {
+    color: #9cdcfe;
+    text-decoration: underline;
+}
+
+QScrollBar:vertical {
+    background: transparent;
+    border: none;
+    margin: 2px;
+    width: 10px;
+}
+
+QScrollBar::handle:vertical {
+    background: #4a4a4e;
+    border-radius: 4px;
+    min-height: 28px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #5a5a60;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical,
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: transparent;
+    border: none;
+    height: 0;
+}

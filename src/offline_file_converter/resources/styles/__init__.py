@@ -1,0 +1,1 @@
+"""Qt stylesheet resources."""

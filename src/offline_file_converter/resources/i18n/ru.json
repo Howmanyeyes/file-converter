@@ -1,0 +1,11 @@
+{
+  "app_name": "Offline File Converter",
+  "description": "Конвертация PDF и PNG без отправки файлов в интернет",
+  "drop_hint": "Перетащите PDF или PNG сюда<br>или<br><span style=\"color: #75beff; text-decoration: underline;\">Выберите файлы</span>",
+  "drop_hint_more": "Перетащите сюда ещё PDF или PNG<br><span style=\"color: #75beff; text-decoration: underline;\">или выберите файлы</span>",
+  "file_filter": "Поддерживаемые файлы (*.pdf *.png);;PDF (*.pdf);;PNG (*.png)",
+  "privacy": "Все файлы обрабатываются локально и не передаются в интернет.",
+  "preview_unavailable": "Превью недоступно",
+  "remove_file": "Убрать файл из списка",
+  "select_file": "Выберите файлы"
+}
