@@ -9,6 +9,7 @@ fi
 
 EDITION="$1"
 ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+VERSION="$(<"${ROOT_DIR}/packaging/macos/version.txt")"
 PYTHON="${ROOT_DIR}/.venv/bin/python"
 EDITION_FILE="${ROOT_DIR}/packaging/macos/editions/${EDITION}.txt"
 export NUITKA_CACHE_DIR="${ROOT_DIR}/.cache/nuitka"
@@ -61,7 +62,7 @@ rm -rf "${GENERATED_APP_PATH}"
     --macos-app-icon="${ROOT_DIR}/assets/app-icon.icns" \
     --macos-app-name="${APP_NAME}" \
     --macos-signed-app-name="${BUNDLE_IDENTIFIER}" \
-    --macos-app-version="0.1.0" \
+    --macos-app-version="${VERSION}" \
     --output-filename="${APP_NAME}" \
     --assume-yes-for-downloads \
     --include-package=offline_file_converter \
