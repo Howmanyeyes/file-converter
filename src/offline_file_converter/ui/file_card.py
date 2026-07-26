@@ -1,7 +1,7 @@
 import sys
-import threading
 from importlib.resources import files
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import pypdfium2 as pdfium
 from PySide6.QtCore import (
@@ -47,11 +47,14 @@ from PySide6.QtWidgets import (
 )
 
 from offline_file_converter.models.selected_file import SelectedFile
+from offline_file_converter.office_runtime import (
+    convert_office_document_to_pdf,
+)
+from offline_file_converter.pdfium_runtime import PDFIUM_LOCK
 
 
 CARD_MIME_TYPE = "application/x-offline-file-converter-card"
 PREVIEW_HEIGHT = 128
-_PDFIUM_LOCK = threading.Lock()
 
 
 def _load_icon(name: str) -> QIcon:
@@ -80,18 +83,21 @@ class PreviewSignals(QObject):
 
 
 class PreviewWorker(QRunnable):
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, detected_format: str) -> None:
         super().__init__()
         self.path = path
+        self.detected_format = detected_format
         self.signals = PreviewSignals()
 
     @Slot()
     def run(self) -> None:
         try:
-            if self.path.suffix.lower() == ".png":
+            if self.detected_format in {"png", "jpeg"}:
                 image = QImage(str(self.path))
-            elif self.path.suffix.lower() == ".pdf":
+            elif self.detected_format == "pdf":
                 image = self._render_pdf_preview()
+            elif self.detected_format in {"word", "powerpoint"}:
+                image = self._render_office_preview()
             else:
                 image = QImage()
         except Exception:
@@ -99,9 +105,19 @@ class PreviewWorker(QRunnable):
 
         self.signals.ready.emit(image)
 
-    def _render_pdf_preview(self) -> QImage:
-        with _PDFIUM_LOCK:
-            document = pdfium.PdfDocument(str(self.path))
+    def _render_office_preview(self) -> QImage:
+        with TemporaryDirectory(
+            prefix="offline-file-converter-preview-"
+        ) as temporary_directory:
+            pdf_path = convert_office_document_to_pdf(
+                self.path,
+                Path(temporary_directory),
+            )
+            return self._render_pdf_preview(pdf_path)
+
+    def _render_pdf_preview(self, path: Path | None = None) -> QImage:
+        with PDFIUM_LOCK:
+            document = pdfium.PdfDocument(str(path or self.path))
             try:
                 if len(document) == 0:
                     return QImage()
@@ -212,7 +228,7 @@ class FileCard(QFrame):
         self.item = item
         self._strings = strings
         self._source_image = QImage()
-        self._worker = PreviewWorker(item.path)
+        self._worker = PreviewWorker(item.path, item.detected_format)
         self._drag_origin: QPoint | None = None
         self._drag_started_from_child = False
 

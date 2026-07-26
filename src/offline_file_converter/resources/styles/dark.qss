@@ -148,3 +148,585 @@ QScrollBar::sub-page:vertical {
     border: none;
     height: 0;
 }
+
+QFrame#pdfToPngAction {
+    background-color: transparent;
+    border: none;
+}
+
+QFrame#pdfToPngButton {
+    background-color: #c42b1c;
+    border: 1px solid #dd493b;
+    border-radius: 8px;
+}
+
+QPushButton#pdfToPngRunButton {
+    background-color: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 10px 16px;
+}
+
+QPushButton#pdfToPngRunButton:hover {
+    background-color: #d63a2d;
+    border-radius: 7px;
+}
+
+QPushButton#pdfToPngRunButton:pressed {
+    background-color: #a9261a;
+}
+
+QFrame#conversionStatus {
+    border: 1px solid transparent;
+    border-radius: 9px;
+}
+
+QFrame#conversionStatus[status="success"] {
+    background-color: #16825d;
+    border-color: #4ec9b0;
+}
+
+QFrame#conversionStatus[status="failure"] {
+    background-color: #a1262e;
+    border-color: #f14c4c;
+}
+
+QLabel#conversionStatusIcon {
+    background-color: transparent;
+    border: none;
+}
+
+QProgressBar#conversionStatusCountdown {
+    background-color: transparent;
+    border: none;
+}
+
+QProgressBar#conversionStatusCountdown::chunk {
+    background-color: #ffffff;
+    border-radius: 1px;
+}
+
+QFrame#pdfToJpegAction {
+    background-color: transparent;
+    border: none;
+}
+
+QFrame#pdfToJpegButton {
+    background-color: #c42b1c;
+    border: 1px solid #dd493b;
+    border-radius: 8px;
+}
+
+QPushButton#pdfToJpegRunButton {
+    background-color: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 10px 16px;
+}
+
+QPushButton#pdfToJpegRunButton:hover {
+    background-color: #d63a2d;
+    border-bottom-left-radius: 7px;
+    border-top-left-radius: 7px;
+}
+
+QPushButton#pdfToJpegRunButton:pressed {
+    background-color: #a9261a;
+}
+
+QPushButton#pdfToJpegOptionsButton {
+    background-color: transparent;
+    border: none;
+    border-left: 1px solid rgba(255, 255, 255, 90);
+    border-bottom-right-radius: 7px;
+    border-top-right-radius: 7px;
+    padding: 8px;
+}
+
+QPushButton#pdfToJpegOptionsButton:hover {
+    background-color: #d63a2d;
+}
+
+QPushButton#pdfToJpegOptionsButton:pressed {
+    background-color: #a9261a;
+}
+
+QMenu#jpegOptionsMenu {
+    background-color: #252526;
+    border: 1px solid #55555b;
+    border-radius: 6px;
+    padding: 5px;
+}
+
+QMenu#jpegOptionsMenu::item {
+    background-color: transparent;
+    border-radius: 4px;
+    color: #d4d4d4;
+    padding: 7px 30px 7px 10px;
+}
+
+QMenu#jpegOptionsMenu::item:selected {
+    background-color: #094771;
+    color: #ffffff;
+}
+
+QMenu#jpegOptionsMenu::item:disabled {
+    color: #9d9d9d;
+    font-weight: 600;
+}
+
+QMenu#jpegOptionsMenu::separator {
+    background-color: #3e3e42;
+    height: 1px;
+    margin: 5px 7px;
+}
+
+QDialog#settingsWindow {
+    background-color: #1e1e1e;
+}
+
+QLabel#settingsTitle {
+    background-color: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+QLabel#settingsDescription {
+    background-color: transparent;
+    border: none;
+    color: #9d9d9d;
+    font-size: 13px;
+}
+
+QTabWidget#settingsTabs {
+    background-color: transparent;
+    border: none;
+}
+
+QTabWidget#settingsTabs::pane {
+    background-color: #1e1e1e;
+    border: 1px solid #3e3e42;
+    border-radius: 8px;
+    top: -1px;
+}
+
+QTabWidget#settingsTabs QTabBar::tab {
+    background-color: #252526;
+    border: 1px solid #3e3e42;
+    color: #9d9d9d;
+    min-width: 130px;
+    padding: 9px 18px;
+}
+
+QTabWidget#settingsTabs QTabBar::tab:first {
+    border-top-left-radius: 7px;
+}
+
+QTabWidget#settingsTabs QTabBar::tab:last {
+    border-top-right-radius: 7px;
+}
+
+QTabWidget#settingsTabs QTabBar::tab:selected {
+    background-color: #333337;
+    border-bottom-color: #333337;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+QWidget#settingsPage,
+QWidget#settingsScrollContent,
+QWidget#settingsOutputRow,
+QScrollArea#settingsScrollArea,
+QScrollArea#settingsScrollArea > QWidget > QWidget {
+    background-color: transparent;
+    border: none;
+}
+
+QFrame#settingsSection {
+    background-color: #252526;
+    border: 1px solid #3e3e42;
+    border-radius: 9px;
+}
+
+QFrame#settingsSection QLabel {
+    background-color: transparent;
+    border: none;
+}
+
+QLabel#settingsSectionTitle {
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+QLabel#settingsSectionDescription,
+QLabel#settingsFieldDescription {
+    color: #9d9d9d;
+    font-size: 13px;
+}
+
+QLabel#settingsFieldLabel {
+    color: #d4d4d4;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+QComboBox#pdfDpiCombo,
+QComboBox#pdfExportCombo,
+QComboBox#pdfCompressionQualityCombo,
+QComboBox#jpegExtensionCombo,
+QComboBox#outputLocationCombo {
+    background-color: #333337;
+    border: 1px solid #55555b;
+    border-radius: 6px;
+    color: #ffffff;
+    padding: 7px 30px 7px 10px;
+}
+
+QComboBox#pdfDpiCombo:hover,
+QComboBox#pdfExportCombo:hover,
+QComboBox#pdfCompressionQualityCombo:hover,
+QComboBox#jpegExtensionCombo:hover,
+QComboBox#outputLocationCombo:hover {
+    border-color: #007acc;
+}
+
+QComboBox#pdfDpiCombo:focus,
+QComboBox#pdfExportCombo:focus,
+QComboBox#pdfCompressionQualityCombo:focus,
+QComboBox#jpegExtensionCombo:focus,
+QComboBox#outputLocationCombo:focus {
+    border-color: #1177bb;
+}
+
+QComboBox#pdfDpiCombo::drop-down,
+QComboBox#pdfExportCombo::drop-down,
+QComboBox#pdfCompressionQualityCombo::drop-down,
+QComboBox#jpegExtensionCombo::drop-down,
+QComboBox#outputLocationCombo::drop-down {
+    border: none;
+    width: 28px;
+}
+
+QComboBox#pdfDpiCombo QAbstractItemView,
+QComboBox#pdfExportCombo QAbstractItemView,
+QComboBox#pdfCompressionQualityCombo QAbstractItemView,
+QComboBox#jpegExtensionCombo QAbstractItemView,
+QComboBox#outputLocationCombo QAbstractItemView {
+    background-color: #252526;
+    border: 1px solid #55555b;
+    color: #d4d4d4;
+    outline: none;
+    selection-background-color: #094771;
+    selection-color: #ffffff;
+}
+
+QPushButton#settingsChooseDirectory {
+    background-color: #333337;
+    border: 1px solid #55555b;
+    border-radius: 6px;
+    color: #d4d4d4;
+    padding: 7px 11px;
+}
+
+QPushButton#settingsChooseDirectory:hover {
+    background-color: #3f3f44;
+    border-color: #007acc;
+    color: #ffffff;
+}
+
+QLabel#settingsOutputPath {
+    background-color: transparent;
+    border: none;
+    color: #75beff;
+    font-size: 12px;
+}
+
+QLabel#settingsSavedHint {
+    background-color: transparent;
+    border: none;
+    color: #4ec9b0;
+    font-size: 12px;
+}
+
+QFrame#pngToPdfAction,
+QFrame#pngToJpegAction {
+    background-color: transparent;
+    border: none;
+}
+
+QFrame#pngToPdfButton,
+QFrame#pngToJpegButton {
+    background-color: #c42b1c;
+    border: 1px solid #dd493b;
+    border-radius: 8px;
+}
+
+QPushButton#pngToPdfRunButton,
+QPushButton#pngToJpegRunButton {
+    background-color: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 10px 16px;
+}
+
+QPushButton#pngToPdfRunButton:hover {
+    background-color: #d63a2d;
+    border-radius: 7px;
+}
+
+QPushButton#pngToJpegRunButton:hover {
+    background-color: #d63a2d;
+    border-bottom-left-radius: 7px;
+    border-top-left-radius: 7px;
+}
+
+QPushButton#pngToPdfRunButton:pressed,
+QPushButton#pngToJpegRunButton:pressed {
+    background-color: #a9261a;
+}
+
+QPushButton#pngToJpegOptionsButton {
+    background-color: transparent;
+    border: none;
+    border-left: 1px solid rgba(255, 255, 255, 90);
+    border-bottom-right-radius: 7px;
+    border-top-right-radius: 7px;
+    padding: 8px;
+}
+
+QPushButton#pngToJpegOptionsButton:hover {
+    background-color: #d63a2d;
+}
+
+QPushButton#pngToJpegOptionsButton:pressed {
+    background-color: #a9261a;
+}
+
+QFrame#pdfToolAction,
+QFrame#pngToolAction,
+QFrame#jpegToolAction {
+    background-color: transparent;
+    border: none;
+}
+
+QFrame#pdfToolButton,
+QFrame#pngToolButton,
+QFrame#jpegToolButton {
+    background-color: #0e639c;
+    border: 1px solid #168bd2;
+    border-radius: 8px;
+}
+
+QPushButton#pdfToolRunButton,
+QPushButton#pngToolRunButton,
+QPushButton#jpegToolRunButton {
+    background-color: transparent;
+    border: none;
+    border-radius: 7px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 10px 16px;
+}
+
+QPushButton#pdfToolRunButton:hover,
+QPushButton#pngToolRunButton:hover,
+QPushButton#jpegToolRunButton:hover {
+    background-color: #1177bb;
+}
+
+QPushButton#pdfToolRunButton:pressed,
+QPushButton#pngToolRunButton:pressed,
+QPushButton#jpegToolRunButton:pressed {
+    background-color: #094771;
+}
+
+QPushButton#pdfToolRunButton:disabled,
+QPushButton#pngToolRunButton:disabled,
+QPushButton#jpegToolRunButton:disabled {
+    background-color: #263b49;
+    color: #8495a0;
+}
+
+QDialog#pdfToolDialog {
+    background-color: #1e1e1e;
+}
+
+QLabel#pdfToolTitle {
+    background-color: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+QLabel#pdfToolDescription,
+QLabel#pdfToolHint {
+    background-color: transparent;
+    border: none;
+    color: #9d9d9d;
+    font-size: 13px;
+}
+
+QLabel#pdfToolFieldLabel {
+    background-color: transparent;
+    border: none;
+    color: #d4d4d4;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+QLabel#pdfToolError {
+    background-color: transparent;
+    border: none;
+    color: #f48771;
+    font-size: 13px;
+}
+
+QWidget#pdfToolFieldContainer {
+    background-color: transparent;
+    border: none;
+}
+
+QComboBox#pdfToolCombo,
+QComboBox#pdfToolUnitCombo,
+QLineEdit#pdfToolLineEdit,
+QDoubleSpinBox#pdfToolSizeInput {
+    background-color: #333337;
+    border: 1px solid #55555b;
+    border-radius: 6px;
+    color: #ffffff;
+    padding: 7px 10px;
+}
+
+QComboBox#pdfToolCombo,
+QComboBox#pdfToolUnitCombo {
+    padding-right: 30px;
+}
+
+QComboBox#pdfToolCombo:hover,
+QComboBox#pdfToolUnitCombo:hover,
+QLineEdit#pdfToolLineEdit:hover,
+QDoubleSpinBox#pdfToolSizeInput:hover {
+    border-color: #007acc;
+}
+
+QComboBox#pdfToolCombo:focus,
+QComboBox#pdfToolUnitCombo:focus,
+QLineEdit#pdfToolLineEdit:focus,
+QDoubleSpinBox#pdfToolSizeInput:focus {
+    border-color: #1177bb;
+}
+
+QComboBox#pdfToolCombo::drop-down,
+QComboBox#pdfToolUnitCombo::drop-down {
+    border: none;
+    width: 28px;
+}
+
+QComboBox#pdfToolCombo QAbstractItemView,
+QComboBox#pdfToolUnitCombo QAbstractItemView {
+    background-color: #252526;
+    border: 1px solid #55555b;
+    color: #d4d4d4;
+    outline: none;
+    selection-background-color: #094771;
+    selection-color: #ffffff;
+}
+
+QDoubleSpinBox#pdfToolSizeInput::up-button,
+QDoubleSpinBox#pdfToolSizeInput::down-button {
+    background-color: #3f3f44;
+    border: none;
+    width: 20px;
+}
+
+QPushButton#pdfToolConfirmButton,
+QPushButton#pdfToolLosslessButton,
+QPushButton#pdfToolCancelButton {
+    border-radius: 6px;
+    color: #ffffff;
+    min-width: 90px;
+    padding: 8px 14px;
+}
+
+QPushButton#pdfToolConfirmButton {
+    background-color: #0e639c;
+    border: 1px solid #168bd2;
+}
+
+QPushButton#pdfToolConfirmButton:hover {
+    background-color: #1177bb;
+}
+
+QPushButton#pdfToolConfirmButton:pressed {
+    background-color: #094771;
+}
+
+QPushButton#pdfToolLosslessButton {
+    background-color: #263b49;
+    border: 1px solid #168bd2;
+    color: #9cdcfe;
+}
+
+QPushButton#pdfToolLosslessButton:hover {
+    background-color: #0e639c;
+    color: #ffffff;
+}
+
+QPushButton#pdfToolLosslessButton:pressed {
+    background-color: #094771;
+}
+
+QPushButton#pdfToolCancelButton {
+    background-color: #333337;
+    border: 1px solid #55555b;
+}
+
+QPushButton#pdfToolCancelButton:hover {
+    background-color: #3f3f44;
+    border-color: #007acc;
+}
+
+QFrame#jpegConversionAction,
+QFrame#officeConversionAction {
+    background-color: transparent;
+    border: none;
+}
+
+QFrame#jpegConversionButton,
+QFrame#officeConversionButton {
+    background-color: #c42b1c;
+    border: 1px solid #dd493b;
+    border-radius: 8px;
+}
+
+QPushButton#jpegConversionRunButton,
+QPushButton#officeConversionRunButton {
+    background-color: transparent;
+    border: none;
+    border-radius: 7px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 10px 16px;
+}
+
+QPushButton#jpegConversionRunButton:hover,
+QPushButton#officeConversionRunButton:hover {
+    background-color: #d63a2d;
+}
+
+QPushButton#jpegConversionRunButton:pressed,
+QPushButton#officeConversionRunButton:pressed {
+    background-color: #a9261a;
+}

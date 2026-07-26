@@ -25,6 +25,7 @@ from PySide6.QtWidgets import (
 )
 
 from offline_file_converter.models.selected_file import SelectedFile
+from offline_file_converter.models.file_format import detect_file_format
 from offline_file_converter.ui.file_card import CARD_MIME_TYPE, FileCard
 
 
@@ -32,7 +33,18 @@ CARD_MIN_WIDTH = 184
 CARD_MAX_WIDTH = 248
 CARD_GAP = 12
 DROP_INDICATOR_WIDTH = 12
-SUPPORTED_SUFFIXES = {".pdf", ".png"}
+BASE_SUPPORTED_SUFFIXES = {
+    ".pdf",
+    ".png",
+    ".jpg",
+    ".jpeg",
+}
+OFFICE_SUPPORTED_SUFFIXES = {
+    ".doc",
+    ".docx",
+    ".ppt",
+    ".pptx",
+}
 
 
 class DropIndicator(QWidget):
@@ -60,10 +72,18 @@ class DropIndicator(QWidget):
 
 class FileDropArea(QFrame):
     select_files_requested = Signal()
+    files_changed = Signal(object)
 
-    def __init__(self, strings: dict[str, str]) -> None:
+    def __init__(
+        self,
+        strings: dict[str, str],
+        office_support_enabled: bool = True,
+    ) -> None:
         super().__init__()
         self._strings = strings
+        self._supported_suffixes = set(BASE_SUPPORTED_SUFFIXES)
+        if office_support_enabled:
+            self._supported_suffixes.update(OFFICE_SUPPORTED_SUFFIXES)
         self._items: list[SelectedFile] = []
         self._cards: list[FileCard] = []
         self._known_paths: set[str] = set()
@@ -71,6 +91,10 @@ class FileDropArea(QFrame):
         self._drag_insertion_index: int | None = None
         self._preview_pool = QThreadPool(self)
         self._preview_pool.setMaxThreadCount(3)
+        self._input_message_timer = QTimer(self)
+        self._input_message_timer.setSingleShot(True)
+        self._input_message_timer.setInterval(3000)
+        self._input_message_timer.timeout.connect(self._restore_hint)
 
         self.setObjectName("dropArea")
         self.setAcceptDrops(True)
@@ -129,20 +153,40 @@ class FileDropArea(QFrame):
     def ordered_files(self) -> tuple[SelectedFile, ...]:
         return tuple(self._items)
 
+    @property
+    def selected_format(self) -> str | None:
+        return self._items[0].detected_format if self._items else None
+
     def add_files(self, paths: list[str]) -> None:
         last_card = None
+        rejected_mixed_type = False
+        selected_format = (
+            self._items[0].detected_format if self._items else None
+        )
 
         for raw_path in paths:
             path = Path(raw_path).expanduser().absolute()
             key = str(path)
+            detected_format = detect_file_format(path)
             if (
                 key in self._known_paths
                 or not path.is_file()
-                or path.suffix.lower() not in SUPPORTED_SUFFIXES
+                or path.suffix.lower() not in self._supported_suffixes
+                or detected_format is None
             ):
                 continue
 
-            item = SelectedFile(path=path, order=len(self._items) + 1)
+            if selected_format is None:
+                selected_format = detected_format
+            elif detected_format != selected_format:
+                rejected_mixed_type = True
+                continue
+
+            item = SelectedFile(
+                path=path,
+                order=len(self._items) + 1,
+                detected_format=detected_format,
+            )
             card = FileCard(item, self._strings, self._preview_pool)
             card.remove_requested.connect(self.remove_file)
             self._items.append(item)
@@ -150,16 +194,23 @@ class FileDropArea(QFrame):
             self._known_paths.add(key)
             last_card = card
 
+        if rejected_mixed_type:
+            self._show_input_message(
+                self._strings["mixed_file_types_not_allowed"]
+            )
+
         if last_card is None:
             return
 
-        self._hint.setText(self._strings["drop_hint_more"])
+        if not rejected_mixed_type:
+            self._restore_hint()
         self._hint.setMinimumHeight(52)
         self._hint.setMaximumHeight(52)
         self._hint.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self._scroll.show()
         self._sync_order()
         self._reflow_cards()
+        self.files_changed.emit(self.ordered_files)
         QTimer.singleShot(0, lambda: self._finish_adding(last_card))
 
     def remove_file(self, item_id: str) -> None:
@@ -177,6 +228,7 @@ class FileDropArea(QFrame):
 
         if not self._cards:
             self._show_empty_state()
+        self.files_changed.emit(self.ordered_files)
 
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
         if event.mimeData().hasFormat(CARD_MIME_TYPE):
@@ -268,7 +320,10 @@ class FileDropArea(QFrame):
             if not url.isLocalFile():
                 continue
             path = Path(url.toLocalFile())
-            if path.is_file() and path.suffix.lower() in SUPPORTED_SUFFIXES:
+            if (
+                path.is_file()
+                and path.suffix.lower() in self._supported_suffixes
+            ):
                 paths.append(str(path))
         return paths
 
@@ -321,6 +376,7 @@ class FileDropArea(QFrame):
         self._cards.insert(insertion_index, card)
         self._sync_order()
         self._reflow_cards(force=True)
+        self.files_changed.emit(self.ordered_files)
 
     def _insertion_index(self, drop_position: QPoint) -> int:
         if not self._cards:
@@ -402,6 +458,7 @@ class FileDropArea(QFrame):
         self._drag_insertion_index = None
 
     def _show_empty_state(self) -> None:
+        self._input_message_timer.stop()
         self._hint.setText(self._strings["drop_hint"])
         self._hint.setMinimumHeight(210)
         self._hint.setMaximumHeight(16777215)
@@ -409,6 +466,15 @@ class FileDropArea(QFrame):
         self._scroll.hide()
         self._current_columns = 0
         self._hide_drop_indicator()
+
+    def _show_input_message(self, message: str) -> None:
+        self._input_message_timer.stop()
+        self._hint.setText(message)
+        self._input_message_timer.start()
+
+    def _restore_hint(self) -> None:
+        hint_key = "drop_hint_more" if self._items else "drop_hint"
+        self._hint.setText(self._strings[hint_key])
 
     def _reflow_cards(self, force: bool = False) -> None:
         available_width = max(1, self._scroll.viewport().width() - 24)

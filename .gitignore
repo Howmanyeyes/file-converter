@@ -16,6 +16,9 @@ ENV/
 # Packaging and build output
 build/
 dist/
+vendor/libreoffice/
+.cache/libreoffice/
+.cache/nuitka/
 *.egg-info/
 .eggs/
 *.dmg
@@ -23,6 +26,7 @@ dist/
 *.pkg
 *.app
 *.exe
+nuitka-crash-report.xml
 
 # Logs and temporary files
 *.log
