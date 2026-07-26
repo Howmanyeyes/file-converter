@@ -58,6 +58,7 @@ rm -rf "${GENERATED_APP_PATH}"
     --enable-plugin=pyside6 \
     --macos-create-app-bundle \
     --macos-target-arch=arm64 \
+    --macos-app-icon="${ROOT_DIR}/assets/app-icon.icns" \
     --macos-app-name="${APP_NAME}" \
     --macos-signed-app-name="${BUNDLE_IDENTIFIER}" \
     --macos-app-version="0.1.0" \
