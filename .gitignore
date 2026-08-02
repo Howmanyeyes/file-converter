@@ -26,6 +26,7 @@ vendor/libreoffice/
 *.pkg
 *.app
 *.exe
+assets/app-icon.ico
 nuitka-crash-report.xml
 
 # Logs and temporary files

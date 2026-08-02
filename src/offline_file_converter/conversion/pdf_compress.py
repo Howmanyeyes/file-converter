@@ -4,8 +4,8 @@ from shutil import copyfile
 from tempfile import TemporaryDirectory
 from uuid import uuid4
 
-import pikepdf
 import pypdfium2 as pdfium
+from pypdf import PdfReader, PdfWriter
 
 from offline_file_converter.pdfium_runtime import PDFIUM_LOCK
 
@@ -46,15 +46,10 @@ def compress_pdf_with_high_quality(
         with TemporaryDirectory(prefix="offline-file-converter-") as temporary_dir:
             temporary_root = Path(temporary_dir)
             optimized_candidate = temporary_root / "optimized.pdf"
-            with pikepdf.Pdf.open(path) as source_pdf:
-                if not source_pdf.pages:
-                    raise ValueError("PDF не содержит страниц.")
-                source_pdf.save(
-                    optimized_candidate,
-                    compress_streams=True,
-                    recompress_flate=True,
-                    object_stream_mode=pikepdf.ObjectStreamMode.generate,
-                )
+            source_pdf = PdfReader(str(path))
+            if not source_pdf.pages:
+                raise ValueError("PDF не содержит страниц.")
+            _save_optimized_pdf(source_pdf, optimized_candidate)
 
             with PDFIUM_LOCK:
                 document = pdfium.PdfDocument(str(path))
@@ -128,15 +123,10 @@ def compress_pdf_file(
         with TemporaryDirectory(prefix="offline-file-converter-") as temporary_dir:
             temporary_root = Path(temporary_dir)
             lossless_candidate = temporary_root / "lossless.pdf"
-            with pikepdf.Pdf.open(path) as source_pdf:
-                if not source_pdf.pages:
-                    raise ValueError("PDF не содержит страниц.")
-                source_pdf.save(
-                    lossless_candidate,
-                    compress_streams=True,
-                    recompress_flate=True,
-                    object_stream_mode=pikepdf.ObjectStreamMode.generate,
-                )
+            source_pdf = PdfReader(str(path))
+            if not source_pdf.pages:
+                raise ValueError("PDF не содержит страниц.")
+            _save_optimized_pdf(source_pdf, lossless_candidate)
 
             if lossless_candidate.stat().st_size <= target_size_bytes:
                 copyfile(lossless_candidate, temporary_output)
@@ -201,46 +191,64 @@ def _rasterize_pdf(
     progress_callback: ProgressCallback,
     temporary_root: Path,
 ) -> None:
-    with pikepdf.Pdf.new() as compressed_pdf:
-        for page_index in range(len(document)):
-            page = document[page_index]
+    compressed_pdf = PdfWriter()
+    for page_index in range(len(document)):
+        page = document[page_index]
+        try:
+            bitmap = page.render(scale=dpi / 72)
             try:
-                bitmap = page.render(scale=dpi / 72)
+                rendered_image = bitmap.to_pil()
+                image = rendered_image.convert("RGB")
                 try:
-                    rendered_image = bitmap.to_pil()
-                    image = rendered_image.convert("RGB")
-                    try:
-                        page_pdf_path = temporary_root / (
-                            f"page-{dpi}-{quality}-{page_index}.pdf"
-                        )
-                        image.save(
-                            page_pdf_path,
-                            format="PDF",
-                            resolution=dpi,
-                            quality=quality,
-                            optimize=True,
-                        )
-                        with pikepdf.Pdf.open(page_pdf_path) as page_pdf:
-                            compressed_pdf.pages.extend(page_pdf.pages)
-                        page_pdf_path.unlink(missing_ok=True)
-                    finally:
-                        image.close()
-                        rendered_image.close()
+                    page_pdf_path = temporary_root / (
+                        f"page-{dpi}-{quality}-{page_index}.pdf"
+                    )
+                    image.save(
+                        page_pdf_path,
+                        format="PDF",
+                        resolution=dpi,
+                        quality=quality,
+                        optimize=True,
+                    )
+                    page_pdf = PdfReader(str(page_pdf_path))
+                    compressed_pdf.append(page_pdf)
                 finally:
-                    bitmap.close()
+                    image.close()
+                    rendered_image.close()
             finally:
-                page.close()
+                bitmap.close()
+        finally:
+            page.close()
 
-            progress_callback(
-                completed_before_profile + page_index + 1,
-                total_steps,
-            )
-
-        compressed_pdf.save(
-            output_path,
-            compress_streams=True,
-            object_stream_mode=pikepdf.ObjectStreamMode.generate,
+        progress_callback(
+            completed_before_profile + page_index + 1,
+            total_steps,
         )
+
+    _write_optimized_writer(compressed_pdf, output_path)
+
+
+def _save_optimized_pdf(
+    source_pdf: PdfReader,
+    output_path: Path,
+) -> None:
+    writer = PdfWriter()
+    writer.clone_document_from_reader(source_pdf)
+    _write_optimized_writer(writer, output_path)
+
+
+def _write_optimized_writer(
+    writer: PdfWriter,
+    output_path: Path,
+) -> None:
+    for page in writer.pages:
+        page.compress_content_streams()
+    writer.compress_identical_objects(
+        remove_duplicates=True,
+        remove_unreferenced=True,
+    )
+    with output_path.open("wb") as output_file:
+        writer.write(output_file)
 
 
 def _available_output_path(destination: Path, source_stem: str) -> Path:

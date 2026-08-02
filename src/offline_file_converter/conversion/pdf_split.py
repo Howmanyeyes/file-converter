@@ -2,7 +2,7 @@ from collections.abc import Callable, Sequence
 from pathlib import Path
 from uuid import uuid4
 
-import pikepdf
+from pypdf import PdfReader, PdfWriter
 
 
 ProgressCallback = Callable[[int, int], None]
@@ -22,50 +22,51 @@ def split_pdf_file(
     temporary_outputs: list[Path] = []
 
     try:
-        with pikepdf.Pdf.open(path) as source_pdf:
-            page_count = len(source_pdf.pages)
-            if page_count < 2:
-                raise ValueError("В PDF должна быть минимум две страницы.")
+        source_pdf = PdfReader(str(path))
+        page_count = len(source_pdf.pages)
+        if page_count < 2:
+            raise ValueError("В PDF должна быть минимум две страницы.")
 
-            page_groups = (
-                [(page_index,) for page_index in range(page_count)]
-                if mode == "pages"
-                else _parse_page_groups(range_specification, page_count)
-            )
-            if len(page_groups) < 2:
-                raise ValueError(
-                    "Укажите минимум две части, разделяя диапазоны запятыми."
-                )
-
-            destination = output_directory or path.parent
-            output_paths = _available_output_paths(
-                destination,
-                path.stem,
-                len(page_groups),
+        page_groups = (
+            [(page_index,) for page_index in range(page_count)]
+            if mode == "pages"
+            else _parse_page_groups(range_specification, page_count)
+        )
+        if len(page_groups) < 2:
+            raise ValueError(
+                "Укажите минимум две части, разделяя диапазоны запятыми."
             )
 
-            for part_index, (page_group, output_path) in enumerate(
-                zip(page_groups, output_paths),
-                start=1,
-            ):
-                temporary_path = output_path.with_name(
-                    f".{output_path.name}.{uuid4().hex}.tmp"
-                )
-                temporary_outputs.append(temporary_path)
+        destination = output_directory or path.parent
+        output_paths = _available_output_paths(
+            destination,
+            path.stem,
+            len(page_groups),
+        )
 
-                with pikepdf.Pdf.new() as part_pdf:
-                    for page_index in page_group:
-                        part_pdf.pages.append(source_pdf.pages[page_index])
-                    part_pdf.save(
-                        temporary_path,
-                        compress_streams=True,
-                        object_stream_mode=pikepdf.ObjectStreamMode.generate,
-                    )
+        for part_index, (page_group, output_path) in enumerate(
+            zip(page_groups, output_paths),
+            start=1,
+        ):
+            temporary_path = output_path.with_name(
+                f".{output_path.name}.{uuid4().hex}.tmp"
+            )
+            temporary_outputs.append(temporary_path)
 
-                temporary_path.replace(output_path)
-                temporary_outputs.remove(temporary_path)
-                created_outputs.append(output_path)
-                progress_callback(part_index, len(page_groups))
+            part_pdf = PdfWriter()
+            for page_index in page_group:
+                part_pdf.add_page(source_pdf.pages[page_index])
+            part_pdf.compress_identical_objects(
+                remove_duplicates=True,
+                remove_unreferenced=True,
+            )
+            with temporary_path.open("wb") as output_file:
+                part_pdf.write(output_file)
+
+            temporary_path.replace(output_path)
+            temporary_outputs.remove(temporary_path)
+            created_outputs.append(output_path)
+            progress_callback(part_index, len(page_groups))
 
         return created_outputs
     except Exception:

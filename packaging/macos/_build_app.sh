@@ -9,9 +9,9 @@ fi
 
 EDITION="$1"
 ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-VERSION="$(<"${ROOT_DIR}/packaging/macos/version.txt")"
+VERSION="$(<"${ROOT_DIR}/packaging/version.txt")"
 PYTHON="${ROOT_DIR}/.venv/bin/python"
-EDITION_FILE="${ROOT_DIR}/packaging/macos/editions/${EDITION}.txt"
+EDITION_FILE="${ROOT_DIR}/packaging/editions/${EDITION}.txt"
 export NUITKA_CACHE_DIR="${ROOT_DIR}/.cache/nuitka"
 export PYTHONPATH="${ROOT_DIR}/src"
 

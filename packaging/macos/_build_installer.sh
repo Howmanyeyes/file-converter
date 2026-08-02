@@ -9,7 +9,7 @@ fi
 
 EDITION="$1"
 ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-VERSION="$(<"${ROOT_DIR}/packaging/macos/version.txt")"
+VERSION="$(<"${ROOT_DIR}/packaging/version.txt")"
 PYTHON="${ROOT_DIR}/.venv/bin/python"
 BACKGROUND_SOURCE="${ROOT_DIR}/packaging/macos/dmg-background.png"
 BACKGROUND_RENDERER="${ROOT_DIR}/packaging/macos/create_dmg_background.py"

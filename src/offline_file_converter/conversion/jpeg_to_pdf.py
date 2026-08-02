@@ -3,8 +3,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from uuid import uuid4
 
-import pikepdf
 from PIL import Image
+from pypdf import PdfReader, PdfWriter
 
 
 ProgressCallback = Callable[[int, int], None]
@@ -26,19 +26,20 @@ def convert_jpeg_files_to_pdf(
 
     try:
         with TemporaryDirectory(prefix="offline-file-converter-") as temporary_dir:
-            with pikepdf.Pdf.new() as combined_pdf:
-                for index, source_path in enumerate(paths):
-                    page_pdf_path = Path(temporary_dir) / f"page-{index}.pdf"
-                    _save_jpeg_as_pdf_page(source_path, page_pdf_path)
-                    with pikepdf.Pdf.open(page_pdf_path) as page_pdf:
-                        combined_pdf.pages.extend(page_pdf.pages)
-                    progress_callback(index + 1, len(paths))
+            combined_pdf = PdfWriter()
+            for index, source_path in enumerate(paths):
+                page_pdf_path = Path(temporary_dir) / f"page-{index}.pdf"
+                _save_jpeg_as_pdf_page(source_path, page_pdf_path)
+                page_pdf = PdfReader(str(page_pdf_path))
+                combined_pdf.append(page_pdf)
+                progress_callback(index + 1, len(paths))
 
-                combined_pdf.save(
-                    temporary_output,
-                    compress_streams=True,
-                    object_stream_mode=pikepdf.ObjectStreamMode.generate,
-                )
+            combined_pdf.compress_identical_objects(
+                remove_duplicates=True,
+                remove_unreferenced=True,
+            )
+            with temporary_output.open("wb") as output_file:
+                combined_pdf.write(output_file)
 
         temporary_output.replace(output_path)
         return [output_path]

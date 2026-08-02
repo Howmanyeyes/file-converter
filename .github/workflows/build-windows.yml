@@ -1,0 +1,84 @@
+name: Build Windows installers
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.edition }} / ${{ matrix.architecture }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - edition: full
+            architecture: arm64
+            python_architecture: arm64
+            runner: windows-11-arm
+          - edition: lite
+            architecture: arm64
+            python_architecture: arm64
+            runner: windows-11-arm
+          - edition: full
+            architecture: amd64
+            python_architecture: x64
+            runner: windows-2022
+          - edition: lite
+            architecture: amd64
+            python_architecture: x64
+            runner: windows-2022
+
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          architecture: ${{ matrix.python_architecture }}
+          cache: pip
+
+      - name: Install dependencies
+        shell: pwsh
+        run: python -m pip install -r requirements.txt
+
+      - name: Build installer
+        shell: pwsh
+        run: >-
+          ./packaging/windows/_build_installer.ps1
+          -Edition "${{ matrix.edition }}"
+          -Architecture "${{ matrix.architecture }}"
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-${{ matrix.edition }}-${{ matrix.architecture }}
+          path: dist/OfflineFileConverter-*-windows-${{ matrix.architecture }}-setup.exe
+          if-no-files-found: error
+          compression-level: 0
+
+  bundle:
+    name: Bundle all Windows installers
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download installers
+        uses: actions/download-artifact@v4
+        with:
+          pattern: windows-*
+          path: dist
+          merge-multiple: true
+
+      - name: Upload one bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installers
+          path: dist/*.exe
+          if-no-files-found: error
+          compression-level: 0

@@ -2,7 +2,7 @@ from collections.abc import Callable, Sequence
 from pathlib import Path
 from uuid import uuid4
 
-import pikepdf
+from pypdf import PdfReader, PdfWriter
 
 
 ProgressCallback = Callable[[int, int], None]
@@ -23,21 +23,22 @@ def merge_pdf_files(
     )
 
     try:
-        with pikepdf.Pdf.new() as combined_pdf:
-            for index, source_path in enumerate(paths):
-                with pikepdf.Pdf.open(source_path) as source_pdf:
-                    if not source_pdf.pages:
-                        raise ValueError(
-                            f"PDF не содержит страниц: {source_path.name}"
-                        )
-                    combined_pdf.pages.extend(source_pdf.pages)
-                progress_callback(index + 1, len(paths))
+        combined_pdf = PdfWriter()
+        for index, source_path in enumerate(paths):
+            source_pdf = PdfReader(str(source_path))
+            if not source_pdf.pages:
+                raise ValueError(
+                    f"PDF не содержит страниц: {source_path.name}"
+                )
+            combined_pdf.append(source_pdf)
+            progress_callback(index + 1, len(paths))
 
-            combined_pdf.save(
-                temporary_output,
-                compress_streams=True,
-                object_stream_mode=pikepdf.ObjectStreamMode.generate,
-            )
+        combined_pdf.compress_identical_objects(
+            remove_duplicates=True,
+            remove_unreferenced=True,
+        )
+        with temporary_output.open("wb") as output_file:
+            combined_pdf.write(output_file)
 
         temporary_output.replace(output_path)
         return [output_path]
